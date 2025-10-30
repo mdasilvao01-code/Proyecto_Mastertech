@@ -50,16 +50,12 @@ Vagrant.configure("2") do |config|
     web.vm.provision "shell", path: "scripts/WEB.sh"
   end
 
-  # Maquina Linux: Base de datos
   config.vm.define "db" do |db|
-    db.vm.box = "debian/bookworm64"
-    db.vm.hostname = "db.Mastertech.local"
-    # Interfaz 1: acceso a internet
-    db.vm.network "private_network", type: "dhcp"
-    # Interfaz 2: red interna fija
-    db.vm.network "private_network", ip: "192.168.10.20"
-    db.vm.provision "shell", path: "scripts/DB.sh"
-  end
+  db.vm.box = "debian/bookworm64"
+  db.vm.hostname = "db.Mastertech.local"
+  db.vm.network "private_network", ip: "192.168.10.20", virtualbox__intnet: "red1"
+  db.vm.provision "shell", path: "scripts/DB.sh"
+end
 
   # Disable automatic box update checking. If you disable this, then
   # boxes will only be checked for updates when the user runs

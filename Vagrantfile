@@ -13,10 +13,6 @@ Vagrant.configure("2") do |config|
   # Every Vagrant development environment requires a box. You can search for
   # boxes at https://vagrantcloud.com/search.
 
-  # Red interna comun
-  # config.vm.network "private_network", type: "dhcp"
-
-  # Maquina Linux: DHCP + DNS
   # -*- mode: ruby -*-
   # vi: set ft=ruby :
 
@@ -24,21 +20,10 @@ Vagrant.configure("2") do |config|
   config.vm.define "infra" do |infra|
     infra.vm.box = "debian/bookworm64"
     infra.vm.hostname = "infra.Mastertech.local"
-    infra.vm.network "private_network", ip: "192.168.10.10"   # Red interna
-    infra.vm.network "private_network", type: "dhcp"           # Acceso a internet
-    infra.vm.provision "shell", path: "scripts/DHCP.sh"
-    infra.vm.provision "shell", path: "scripts/DNS.sh"
+    infra.vm.network "private_network", type: "dhcp"
+    infra.vm.network "private_network", ip: "192.168.10.10", virtualbox__intnet: "red2"
+    infra.vm.provision "shell", path: "scripts/DHCPDNSFTP.sh"
   end
-
-  # Maquina Linux: FTP
-  config.vm.define "ftp" do |ftp|
-    ftp.vm.box = "debian/bookworm64"
-    ftp.vm.hostname = "ftp.Mastertech.local"
-    ftp.vm.network "private_network", ip: "192.168.10.11"
-    ftp.vm.network "private_network", type: "dhcp"
-    ftp.vm.provision "shell", path: "scripts/FTP.sh"
-  end
-
   # Maquina Linux: Web + Backend
   config.vm.define "web" do |web|
     web.vm.box = "debian/bookworm64"
@@ -51,11 +36,11 @@ Vagrant.configure("2") do |config|
   end
 
   config.vm.define "db" do |db|
-  db.vm.box = "debian/bookworm64"
-  db.vm.hostname = "db.Mastertech.local"
-  db.vm.network "private_network", ip: "192.168.10.20", virtualbox__intnet: "red1"
-  db.vm.provision "shell", path: "scripts/DB.sh"
-end
+    db.vm.box = "debian/bookworm64"
+    db.vm.hostname = "db.Mastertech.local"
+    db.vm.network "private_network", ip: "192.168.10.20", virtualbox__intnet: "red1"
+    db.vm.provision "shell", path: "scripts/DB.sh"
+  end
 
   # Disable automatic box update checking. If you disable this, then
   # boxes will only be checked for updates when the user runs

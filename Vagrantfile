@@ -28,17 +28,17 @@ Vagrant.configure("2") do |config|
   config.vm.define "web" do |web|
     web.vm.box = "debian/bookworm64"
     web.vm.hostname = "web.Mastertech.local"
-    # Interfaz 1: NAT (acceso a internet)
-    web.vm.network "private_network", type: "dhcp"
     # Interfaz 2: IP fija para red interna
-    web.vm.network "private_network", ip: "192.168.10.12"
+    web.vm.network "private_network", ip: "192.168.10.12", virtualbox__intnet: "red1"
+    web.vm.network "public_network", bridge: "VirtualBox Host-Only Ethernet Adapter"
+    web.vm.network "forwarded_port", guest: 80, host: 8080
     web.vm.provision "shell", path: "scripts/WEB.sh"
   end
 
   config.vm.define "db" do |db|
     db.vm.box = "debian/bookworm64"
     db.vm.hostname = "db.Mastertech.local"
-    db.vm.network "private_network", ip: "192.168.10.20", virtualbox__intnet: "red1"
+    db.vm.network "private_network", ip: "192.168.10.13", virtualbox__intnet: "red1"
     db.vm.provision "shell", path: "scripts/DB.sh"
   end
 

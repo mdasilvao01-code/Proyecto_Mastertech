@@ -9,7 +9,7 @@ apt update
 apt install -y isc-dhcp-server
 
 # Configurar interfaz de escucha
-echo 'INTERFACESv4="eth1"' > /etc/default/isc-dhcp-server
+echo 'INTERFACESv4="eth2"' > /etc/default/isc-dhcp-server
 
 # Crear archivo de configuración DHCP
 cat <<EOF > /etc/dhcp/dhcpd.conf

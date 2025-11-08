@@ -1,17 +1,16 @@
 #!/bin/bash
 
+set -e
 export DEBIAN_FRONTEND=noninteractive
 
-### DHCP CONFIGURACIÓN ###
+echo "🔧 Configurando DHCP, DNS y FTP en la máquina infra..."
 
-# Instalar servidor DHCP
+### DHCP CONFIGURACIÓN ###
 apt update
 apt install -y isc-dhcp-server
 
-# Configurar interfaz de escucha
 echo 'INTERFACESv4="eth2"' > /etc/default/isc-dhcp-server
 
-# Crear archivo de configuración DHCP
 cat <<EOF > /etc/dhcp/dhcpd.conf
 default-lease-time 600;
 max-lease-time 7200;
@@ -21,84 +20,77 @@ subnet 192.168.10.0 netmask 255.255.255.0 {
   range 192.168.10.100 192.168.10.200;
   option routers 192.168.10.1;
   option domain-name-servers 192.168.10.10;
-  option domain-name "Mastertech.local";
+  option domain-name "mastertech.lan";
 }
 EOF
 
-# Forzar configuración y reiniciar
-dpkg --configure -a
 systemctl restart isc-dhcp-server
 
 ### DNS CONFIGURACIÓN ###
-
-# Instalar servidor DNS
 apt install -y bind9
 
-# Crear archivo de zonas
 cat <<EOF > /etc/bind/named.conf.local
-zone "Mastertech.local" {
+zone "mastertech.lan" {
   type master;
-  file "/etc/bind/db.Mastertech.local";
+  file "/etc/bind/db.mastertech.lan";
 };
 
 zone "10.168.192.in-addr.arpa" {
   type master;
-  file "/etc/bind/db.192";
+  file "/etc/bind/db.192.168.10";
 };
 EOF
 
-# Crear zona directa
-cat <<EOF > /etc/bind/db.Mastertech.local
+cat <<EOF > /etc/bind/db.mastertech.lan
 \$TTL    604800
-@       IN      SOA     Mastertech.local. root.Mastertech.local. (
-                              2         ; Serial
-                         604800         ; Refresh
-                          86400         ; Retry
-                        2419200         ; Expire
-                         604800 )       ; Negative Cache TTL
+@       IN      SOA     mastertech.lan. root.mastertech.lan. (
+                        $(date +%Y%m%d%H) ; Serial
+                        604800     ; Refresh
+                        86400      ; Retry
+                        2419200    ; Expire
+                        604800 )   ; Negative Cache TTL
 ;
-@       IN      NS      infra.Mastertech.local.
+@       IN      NS      infra.mastertech.lan.
 infra   IN      A       192.168.10.10
 ftp     IN      A       192.168.10.11
+web     IN      A       192.168.10.12
+mastertech IN   A       192.168.10.12
 EOF
 
-# Crear zona reversa
-cat <<EOF > /etc/bind/db.192
+cat <<EOF > /etc/bind/db.192.168.10
 \$TTL    604800
-@       IN      SOA     Mastertech.local. root.Mastertech.local. (
-                              2         ; Serial
-                         604800         ; Refresh
-                          86400         ; Retry
-                        2419200         ; Expire
-                         604800 )       ; Negative Cache TTL
+@       IN      SOA     mastertech.lan. root.mastertech.lan. (
+                        $(date +%Y%m%d%H) ; Serial
+                        604800     ; Refresh
+                        86400      ; Retry
+                        2419200    ; Expire
+                        604800 )   ; Negative Cache TTL
 ;
-@       IN      NS      infra.Mastertech.local.
-10      IN      PTR     infra.Mastertech.local.
-11      IN      PTR     ftp.Mastertech.local.
+@       IN      NS      infra.mastertech.lan.
+10      IN      PTR     infra.mastertech.lan.
+11      IN      PTR     ftp.mastertech.lan.
+12      IN      PTR     web.mastertech.lan.
 EOF
 
-# Reiniciar servicio DNS
+named-checkconf
+named-checkzone mastertech.lan /etc/bind/db.mastertech.lan
+named-checkzone 10.168.192.in-addr.arpa /etc/bind/db.192.168.10
+
 systemctl restart bind9
 
 ### FTP CONFIGURACIÓN ###
-
-# Instalar servidor FTP
 apt install -y vsftpd
 
-# Crear estructura de directorios
-mkdir -p /ftp/shared
-mkdir -p /ftp/users/dev1
-mkdir -p /ftp/users/dev2
+mkdir -p /ftp/shared /ftp/users/dev1 /ftp/users/dev2
 
-# Crear usuarios
-useradd -m dev1
-useradd -m dev2
+useradd -m dev1 || true
+useradd -m dev2 || true
 echo "dev1:abcd" | chpasswd
 echo "dev2:abcd" | chpasswd
 
-# Asignar permisos
 chown dev1 /ftp/users/dev1
 chown dev2 /ftp/users/dev2
 
-# Reiniciar servicio FTP
 systemctl restart vsftpd
+
+echo "✅ Infraestructura lista en la máquina infra: DHCP, DNS y FTP funcionando"

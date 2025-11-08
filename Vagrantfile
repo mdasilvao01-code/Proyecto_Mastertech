@@ -22,6 +22,7 @@ Vagrant.configure("2") do |config|
     infra.vm.hostname = "infra.Mastertech.local"
     infra.vm.network "private_network", type: "dhcp"
     infra.vm.network "private_network", ip: "192.168.10.10", virtualbox__intnet: "red1"
+    infra.vm.network "public_network", bridge: "VirtualBox Host-Only Ethernet Adapter"
     infra.vm.provision "shell", path: "scripts/DHCPDNSFTP.sh"
   end
   # Maquina Linux: Web + Backend

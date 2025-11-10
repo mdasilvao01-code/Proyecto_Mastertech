@@ -12,3 +12,6 @@ FLUSH PRIVILEGES;
 EOF
 
 systemctl restart mariadb
+
+
+

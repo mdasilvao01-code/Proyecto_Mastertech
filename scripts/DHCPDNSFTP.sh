@@ -19,7 +19,7 @@ authoritative;
 subnet 192.168.10.0 netmask 255.255.255.0 {
   range 192.168.10.100 192.168.10.200;
   option routers 192.168.10.1;
-  option domain-name-servers 192.168.10.10;
+  option domain-name-servers 192.168.10.10, 192.168.10.20;
   option domain-name "mastertech.lan";
 }
 EOF

@@ -1,0 +1,23 @@
+MasterTech.lan
+├── España
+│   ├── Madrid
+│   │   ├── Usuarios
+│   │   ├── Equipos
+│   │   ├── Administración
+│   │   └── Departamentos
+│   │       ├── Sistemas
+│   │       ├── Soporte
+│   │       └── Comercial
+│   ├── Barcelona
+│   ├── Sevilla
+│   ├── Valencia
+│   └── Bilbao
+├── Servicios
+│   ├── Web
+│   ├── FTP
+│   ├── BaseDeDatos
+│   ├── DNS
+│   └── Impresoras
+├── Seguridad
+│   ├── Logs
+│   └── Backups

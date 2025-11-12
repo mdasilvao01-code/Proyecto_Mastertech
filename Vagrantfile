@@ -16,7 +16,7 @@ Vagrant.configure("2") do |config|
   # -*- mode: ruby -*-
   # vi: set ft=ruby :
 
-  # Maquina Linux: DHCP + DNS
+  #Maquina Linux de DHCP, DNS Y FTP
   config.vm.define "infra" do |infra|
     infra.vm.box = "debian/bookworm64"
     infra.vm.hostname = "infra.Mastertech.local"
@@ -25,17 +25,17 @@ Vagrant.configure("2") do |config|
     infra.vm.network "public_network", bridge: "VirtualBox Host-Only Ethernet Adapter"
     infra.vm.provision "shell", path: "scripts/DHCPDNSFTP.sh"
   end
-  # Maquina Linux: Web + Backend
+  #Maquina Linux de WEB con apache
   config.vm.define "web" do |web|
     web.vm.box = "debian/bookworm64"
     web.vm.hostname = "web.Mastertech.local"
-    # Interfaz 2: IP fija para red interna
     web.vm.network "private_network", ip: "192.168.10.12", virtualbox__intnet: "red1"
     web.vm.network "public_network", bridge: "VirtualBox Host-Only Ethernet Adapter"
     web.vm.network "forwarded_port", guest: 80, host: 8080
     web.vm.provision "shell", path: "scripts/WEB.sh"
   end
 
+  #Maquina Linux con DB con mariadb
   config.vm.define "db" do |db|
     db.vm.box = "debian/bookworm64"
     db.vm.hostname = "db.Mastertech.local"

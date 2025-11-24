@@ -43,6 +43,23 @@ Vagrant.configure("2") do |config|
     db.vm.provision "shell", path: "scripts/DB.sh"
   end
 
+  # Maquina Linux que actua como router/NAT
+  config.vm.define "router" do |router|
+    router.vm.box = "debian/bookworm64"
+    router.vm.hostname = "router.Mastertech.local"
+
+  # Adaptador 1: NAT (Internet)
+  # Este le da a Vagrant por defecto, no hace falta declararlo.
+
+  # Adaptador 2: red interna "red1"
+    router.vm.network "private_network",
+      ip: "192.168.10.1",
+      virtualbox__intnet: "red1"
+
+  # Script de provision para configurar NAT + DHCP + DNS
+    router.vm.provision "shell", path: "scripts/router.sh"
+  end
+
   # Disable automatic box update checking. If you disable this, then
   # boxes will only be checked for updates when the user runs
   # `vagrant box outdated`. This is not recommended.

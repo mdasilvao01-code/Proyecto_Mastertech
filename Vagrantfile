@@ -16,7 +16,17 @@ Vagrant.configure("2") do |config|
   # -*- mode: ruby -*-
   # vi: set ft=ruby :
 
-  #Maquina Linux de DHCP, DNS Y FTP
+  # Router
+  config.vm.define "router" do |router|
+    router.vm.box = "debian/bookworm64"
+    router.vm.hostname = "router.Mastertech.local"
+    router.vm.network "private_network",
+      ip: "192.168.10.1",
+      virtualbox__intnet: "red1"
+    router.vm.provision "shell", path: "scripts/router.sh"
+  end
+
+  # Infra (DHCP, DNS, FTP)
   config.vm.define "infra" do |infra|
     infra.vm.box = "debian/bookworm64"
     infra.vm.hostname = "infra.Mastertech.local"
@@ -25,17 +35,8 @@ Vagrant.configure("2") do |config|
     infra.vm.network "public_network", bridge: "VirtualBox Host-Only Ethernet Adapter"
     infra.vm.provision "shell", path: "scripts/DHCPDNSFTP.sh"
   end
-  #Maquina Linux de WEB con apache
-  config.vm.define "web" do |web|
-    web.vm.box = "debian/bookworm64"
-    web.vm.hostname = "web.Mastertech.local"
-    web.vm.network "private_network", ip: "192.168.10.12", virtualbox__intnet: "red1"
-    web.vm.network "public_network", bridge: "VirtualBox Host-Only Ethernet Adapter"
-    web.vm.network "forwarded_port", guest: 80, host: 8080
-    web.vm.provision "shell", path: "scripts/WEB.sh"
-  end
 
-  #Maquina Linux con DB con mariadb
+  # DB (MariaDB)
   config.vm.define "db" do |db|
     db.vm.box = "debian/bookworm64"
     db.vm.hostname = "db.Mastertech.local"
@@ -43,21 +44,39 @@ Vagrant.configure("2") do |config|
     db.vm.provision "shell", path: "scripts/DB.sh"
   end
 
-  # Maquina Linux que actua como router/NAT
-  config.vm.define "router" do |router|
-    router.vm.box = "debian/bookworm64"
-    router.vm.hostname = "router.Mastertech.local"
+  # NFS Server
+  config.vm.define "nfs" do |nfs|
+    nfs.vm.box = "debian/bookworm64"
+    nfs.vm.hostname = "nfs.Mastertech.local"
+    nfs.vm.network "private_network", ip: "192.168.10.14", virtualbox__intnet: "red1"
+    nfs.vm.provision "shell", path: "scripts/NFS.sh"
+  end
 
-  # Adaptador 1: NAT (Internet)
-  # Este le da a Vagrant por defecto, no hace falta declararlo.
+  # Web1
+  config.vm.define "web1" do |web1|
+    web1.vm.box = "debian/bookworm64"
+    web1.vm.hostname = "web1.Mastertech.local"
+    web1.vm.network "private_network", ip: "192.168.10.12", virtualbox__intnet: "red1"
+    web1.vm.network "forwarded_port", guest: 80, host: 8080
+    web1.vm.provision "shell", path: "scripts/WEB.sh"
+  end
 
-  # Adaptador 2: red interna "red1"
-    router.vm.network "private_network",
-      ip: "192.168.10.1",
-      virtualbox__intnet: "red1"
+  # Web2
+  config.vm.define "web2" do |web2|
+    web2.vm.box = "debian/bookworm64"
+    web2.vm.hostname = "web2.Mastertech.local"
+    web2.vm.network "private_network", ip: "192.168.10.15", virtualbox__intnet: "red1"
+    web2.vm.network "forwarded_port", guest: 80, host: 8081
+    web2.vm.provision "shell", path: "scripts/WEB.sh"
+  end
 
-  # Script de provision para configurar NAT + DHCP + DNS
-    router.vm.provision "shell", path: "scripts/router.sh"
+  # Load Balancer
+  config.vm.define "lb" do |lb|
+    lb.vm.box = "debian/bookworm64"
+    lb.vm.hostname = "lb.Mastertech.local"
+    lb.vm.network "private_network", ip: "192.168.10.16", virtualbox__intnet: "red1"
+    lb.vm.network "forwarded_port", guest: 80, host: 8082
+    lb.vm.provision "shell", path: "scripts/LB.sh"
   end
 
   # Disable automatic box update checking. If you disable this, then

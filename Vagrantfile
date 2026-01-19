@@ -16,16 +16,6 @@ Vagrant.configure("2") do |config|
   # -*- mode: ruby -*-
   # vi: set ft=ruby :
 
-  # Router
-  config.vm.define "router" do |router|
-    router.vm.box = "debian/bookworm64"
-    router.vm.hostname = "router.Mastertech.local"
-    router.vm.network "private_network",
-      ip: "192.168.10.1",
-      virtualbox__intnet: "red1"
-    router.vm.provision "shell", path: "scripts/router.sh"
-  end
-
   # Infra (DHCP, DNS, FTP)
   config.vm.define "infra" do |infra|
     infra.vm.box = "debian/bookworm64"
@@ -57,7 +47,6 @@ Vagrant.configure("2") do |config|
     web1.vm.box = "debian/bookworm64"
     web1.vm.hostname = "web1.Mastertech.local"
     web1.vm.network "private_network", ip: "192.168.10.12", virtualbox__intnet: "red1"
-    web1.vm.network "forwarded_port", guest: 80, host: 8080
     web1.vm.provision "shell", path: "scripts/WEB.sh"
   end
 

@@ -1,0 +1,458 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+MASTERTECH - Programa Administrador
+Panel de control para gestión completa del sistema
+Autor: Mario Da Silva Ortega - 2º ASIR
+"""
+
+import requests
+import json
+import os
+
+# Configuración del servidor
+SERVER_URL = "http://localhost:5000"  # Cambiar por tu dominio: http://tu-dominio.com
+
+class AdministradorMastertech:
+    def __init__(self):
+        self.usuario = None
+        self.session = requests.Session()
+    
+    def limpiar_pantalla(self):
+        os.system('clear' if os.name != 'nt' else 'cls')
+    
+    def mostrar_encabezado(self, titulo):
+        self.limpiar_pantalla()
+        print("=" * 70)
+        print(f"👑 MASTERTECH - {titulo}")
+        print("=" * 70)
+        if self.usuario:
+            print(f"👤 Administrador: {self.usuario['nombre']} ({self.usuario['email']})")
+            print("=" * 70)
+        print()
+    
+    def login(self):
+        while True:
+            self.mostrar_encabezado("Inicio de Sesión - ADMINISTRADOR")
+            
+            print("Ingrese sus credenciales:")
+            email = input("📧 Email: ").strip()
+            password = input("🔒 Contraseña: ").strip()
+            
+            try:
+                response = self.session.post(f"{SERVER_URL}/api/login", 
+                    json={"email": email, "password": password})
+                
+                data = response.json()
+                
+                if data.get('success') and data['usuario']['rol'] == 'administrador':
+                    self.usuario = data['usuario']
+                    print(f"\n✅ Bienvenido {self.usuario['nombre']}!")
+                    input("\nPresiona Enter para continuar...")
+                    return True
+                else:
+                    print("\n❌ Error: Credenciales incorrectas o no es administrador")
+                    input("\nPresiona Enter para intentar de nuevo...")
+            
+            except requests.exceptions.ConnectionError:
+                print(f"\n❌ Error: No se puede conectar al servidor en {SERVER_URL}")
+                print("Verifica que el servidor esté ejecutándose.")
+                input("\nPresiona Enter para intentar de nuevo...")
+            except Exception as e:
+                print(f"\n❌ Error: {e}")
+                input("\nPresiona Enter para intentar de nuevo...")
+    
+    def menu_principal(self):
+        while True:
+            self.mostrar_encabezado("Panel de Control")
+            
+            # Mostrar estadísticas rápidas
+            self.mostrar_estadisticas_rapidas()
+            
+            print("\n📋 MENÚ PRINCIPAL:")
+            print("=" * 70)
+            print("1. 📊 Ver Dashboard Completo")
+            print("2. 📋 Ver Todas las Incidencias")
+            print("3. 🔍 Ver Detalle de Incidencia")
+            print("4. 🔧 Asignar Técnico a Incidencia")
+            print("5. 🔄 Cambiar Estado de Incidencia")
+            print("6. 👥 Ver Usuarios del Sistema")
+            print("7. 📈 Ver Estadísticas Detalladas")
+            print("8. 🚪 Salir")
+            print()
+            
+            opcion = input("Selecciona una opción: ").strip()
+            
+            if opcion == '1':
+                self.ver_dashboard()
+            elif opcion == '2':
+                self.ver_todas_incidencias()
+            elif opcion == '3':
+                self.ver_detalle_incidencia()
+            elif opcion == '4':
+                self.asignar_tecnico()
+            elif opcion == '5':
+                self.cambiar_estado()
+            elif opcion == '6':
+                self.ver_usuarios()
+            elif opcion == '7':
+                self.ver_estadisticas()
+            elif opcion == '8':
+                print("\n👋 ¡Hasta pronto!")
+                break
+            else:
+                print("\n❌ Opción no válida")
+                input("\nPresiona Enter para continuar...")
+    
+    def mostrar_estadisticas_rapidas(self):
+        try:
+            response = self.session.get(f"{SERVER_URL}/api/estadisticas")
+            stats = response.json()
+            
+            print("📊 ESTADÍSTICAS RÁPIDAS:")
+            print("-" * 70)
+            print(f"Total: {stats['total_incidencias']} | "
+                  f"🔵 Abiertas: {stats['abiertas']} | "
+                  f"🟡 En Proceso: {stats['en_proceso']} | "
+                  f"🟢 Resueltas: {stats['resueltas']}")
+            print(f"🔴 Críticas: {stats['criticas']} | "
+                  f"⚠️ Sin Asignar: {stats['sin_asignar']} | "
+                  f"👥 Técnicos: {stats['total_tecnicos']}")
+        except:
+            pass
+    
+    def ver_dashboard(self):
+        self.mostrar_encabezado("Dashboard Completo")
+        
+        try:
+            response = self.session.get(f"{SERVER_URL}/api/estadisticas")
+            stats = response.json()
+            
+            print("╔" + "═" * 68 + "╗")
+            print("║" + " " * 22 + "DASHBOARD MASTERTECH" + " " * 26 + "║")
+            print("╚" + "═" * 68 + "╝")
+            print()
+            
+            print("📊 INCIDENCIAS POR ESTADO:")
+            print("-" * 70)
+            print(f"  🔵 Abiertas:           {stats['abiertas']:>3}")
+            print(f"  🟡 En Proceso:         {stats['en_proceso']:>3}")
+            print(f"  🟣 Pendiente Cliente:  {stats['pendiente_cliente']:>3}")
+            print(f"  🟢 Resueltas:          {stats['resueltas']:>3}")
+            print(f"  ⚫ Cerradas:           {stats['cerradas']:>3}")
+            print(f"  {'─' * 30}")
+            print(f"  📋 TOTAL:              {stats['total_incidencias']:>3}")
+            
+            print("\n⚡ INCIDENCIAS POR PRIORIDAD:")
+            print("-" * 70)
+            print(f"  🔴 Críticas:           {stats['criticas']:>3}")
+            print(f"  🟠 Altas:              {stats['altas']:>3}")
+            
+            print("\n👥 RECURSOS:")
+            print("-" * 70)
+            print(f"  🔧 Total Técnicos:     {stats['total_tecnicos']:>3}")
+            print(f"  👤 Total Clientes:     {stats['total_clientes']:>3}")
+            
+            print("\n⚠️ ALERTAS:")
+            print("-" * 70)
+            print(f"  Sin Asignar:           {stats['sin_asignar']:>3}")
+            
+            if stats['sin_asignar'] > 0:
+                print(f"\n  ⚠️  HAY {stats['sin_asignar']} INCIDENCIAS SIN ASIGNAR")
+            
+            if stats['criticas'] > 0:
+                print(f"  🔴 HAY {stats['criticas']} INCIDENCIAS CRÍTICAS")
+        
+        except Exception as e:
+            print(f"❌ Error: {e}")
+        
+        input("\nPresiona Enter para continuar...")
+    
+    def ver_todas_incidencias(self):
+        self.mostrar_encabezado("Todas las Incidencias")
+        
+        try:
+            response = self.session.get(f"{SERVER_URL}/api/incidencias")
+            incidencias = response.json()
+            
+            if not incidencias:
+                print("📭 No hay incidencias en el sistema\n")
+            else:
+                # Ordenar: primero sin asignar, luego por prioridad
+                prioridad_orden = {"Crítica": 0, "Alta": 1, "Media": 2, "Baja": 3}
+                incidencias.sort(key=lambda x: (
+                    0 if x['tecnico_id'] is None else 1,
+                    prioridad_orden.get(x['prioridad'], 4)
+                ))
+                
+                print(f"📊 Total: {len(incidencias)} incidencias\n")
+                
+                for inc in incidencias:
+                    self.mostrar_incidencia_resumida(inc)
+                    print()
+        
+        except Exception as e:
+            print(f"❌ Error: {e}")
+        
+        input("\nPresiona Enter para continuar...")
+    
+    def mostrar_incidencia_resumida(self, inc):
+        estado_simbolo = {
+            "Abierto": "🔵",
+            "En Proceso": "🟡",
+            "Pendiente Cliente": "🟣",
+            "Resuelto": "🟢",
+            "Cerrado": "⚫"
+        }
+        
+        prioridad_simbolo = {
+            "Crítica": "🔴",
+            "Alta": "🟠",
+            "Media": "🟡",
+            "Baja": "🟢"
+        }
+        
+        print("-" * 70)
+        print(f"ID: {inc['id']:>3} | {estado_simbolo.get(inc['estado'], '⚪')} {inc['estado']:<20} | "
+              f"{prioridad_simbolo.get(inc['prioridad'], '⚪')} {inc['prioridad']}")
+        print(f"📌 {inc['titulo']}")
+        print(f"📁 {inc['categoria']} | 👤 {inc['cliente_nombre']}")
+        if inc['tecnico_nombre']:
+            print(f"🔧 Asignado a: {inc['tecnico_nombre']}")
+        else:
+            print(f"🔧 ⚠️ SIN ASIGNAR")
+        print(f"📅 {inc['fecha_creacion']}")
+    
+    def ver_detalle_incidencia(self):
+        self.mostrar_encabezado("Detalle de Incidencia")
+        
+        inc_id = input("Ingresa el ID de la incidencia: ").strip()
+        
+        if not inc_id.isdigit():
+            print("\n❌ ID no válido")
+            input("\nPresiona Enter para continuar...")
+            return
+        
+        try:
+            response = self.session.get(f"{SERVER_URL}/api/incidencias/{inc_id}")
+            
+            if response.status_code == 404:
+                print("\n❌ Incidencia no encontrada")
+            elif response.status_code == 200:
+                inc = response.json()
+                
+                print(f"\n{'='*70}")
+                print(f"INCIDENCIA #{inc['id']}")
+                print(f"{'='*70}")
+                print(f"📌 Título: {inc['titulo']}")
+                print(f"📊 Estado: {inc['estado']}")
+                print(f"⚡ Prioridad: {inc['prioridad']}")
+                print(f"📁 Categoría: {inc['categoria']}")
+                print(f"👤 Cliente: {inc['cliente_nombre']}")
+                print(f"\n📄 Descripción:")
+                print(f"   {inc['descripcion']}")
+                print(f"\n📅 Fecha creación: {inc['fecha_creacion']}")
+                print(f"🔄 Última actualización: {inc['fecha_actualizacion']}")
+                
+                if inc['tecnico_nombre']:
+                    print(f"🔧 Técnico asignado: {inc['tecnico_nombre']}")
+                else:
+                    print("🔧 ⚠️ Sin técnico asignado")
+                
+                # Mostrar comentarios
+                if inc.get('comentarios'):
+                    print(f"\n💬 COMENTARIOS ({len(inc['comentarios'])}):")
+                    print("-" * 70)
+                    for com in inc['comentarios']:
+                        print(f"\n👤 {com['usuario_nombre']} ({com['usuario_rol']})")
+                        print(f"📅 {com['fecha']}")
+                        print(f"💭 {com['comentario']}")
+                        print("-" * 70)
+                else:
+                    print("\n💬 Sin comentarios")
+        
+        except Exception as e:
+            print(f"\n❌ Error: {e}")
+        
+        input("\nPresiona Enter para continuar...")
+    
+    def asignar_tecnico(self):
+        self.mostrar_encabezado("Asignar Técnico a Incidencia")
+        
+        inc_id = input("Ingresa el ID de la incidencia: ").strip()
+        
+        if not inc_id.isdigit():
+            print("\n❌ ID no válido")
+            input("\nPresiona Enter para continuar...")
+            return
+        
+        try:
+            # Obtener incidencia
+            response = self.session.get(f"{SERVER_URL}/api/incidencias/{inc_id}")
+            
+            if response.status_code == 404:
+                print("\n❌ Incidencia no encontrada")
+                input("\nPresiona Enter para continuar...")
+                return
+            
+            inc = response.json()
+            
+            print(f"\nIncidencia: {inc['titulo']}")
+            print(f"Estado: {inc['estado']}")
+            print(f"Prioridad: {inc['prioridad']}")
+            
+            if inc['tecnico_nombre']:
+                print(f"Técnico actual: {inc['tecnico_nombre']}")
+            else:
+                print("⚠️ Sin técnico asignado")
+            
+            # Obtener lista de técnicos
+            response = self.session.get(f"{SERVER_URL}/api/tecnicos")
+            tecnicos = response.json()
+            
+            if not tecnicos:
+                print("\n❌ No hay técnicos registrados en el sistema")
+                input("\nPresiona Enter para continuar...")
+                return
+            
+            print("\n🔧 Técnicos disponibles:")
+            print("0. Sin asignar")
+            for i, tec in enumerate(tecnicos, 1):
+                print(f"{i}. {tec['nombre']} ({tec['email']})")
+            
+            seleccion = input(f"\nSelecciona técnico (0-{len(tecnicos)}): ").strip()
+            
+            if not seleccion.isdigit() or int(seleccion) < 0 or int(seleccion) > len(tecnicos):
+                print("\n❌ Selección no válida")
+                input("\nPresiona Enter para continuar...")
+                return
+            
+            if seleccion == '0':
+                tecnico_id = None
+                print("\n⚠️ Se quitará la asignación del técnico")
+            else:
+                tecnico_id = tecnicos[int(seleccion) - 1]['id']
+                print(f"\n✅ Se asignará a: {tecnicos[int(seleccion) - 1]['nombre']}")
+            
+            confirmar = input("¿Confirmar? (s/n): ").strip().lower()
+            
+            if confirmar == 's':
+                response = self.session.put(
+                    f"{SERVER_URL}/api/incidencias/{inc_id}",
+                    json={"tecnico_id": tecnico_id}
+                )
+                
+                if response.status_code == 200:
+                    print("\n✅ Técnico asignado correctamente")
+                else:
+                    print("\n❌ Error al asignar técnico")
+            else:
+                print("\n❌ Operación cancelada")
+        
+        except Exception as e:
+            print(f"\n❌ Error: {e}")
+        
+        input("\nPresiona Enter para continuar...")
+    
+    def cambiar_estado(self):
+        self.mostrar_encabezado("Cambiar Estado de Incidencia")
+        
+        inc_id = input("Ingresa el ID de la incidencia: ").strip()
+        
+        if not inc_id.isdigit():
+            print("\n❌ ID no válido")
+            input("\nPresiona Enter para continuar...")
+            return
+        
+        try:
+            response = self.session.get(f"{SERVER_URL}/api/incidencias/{inc_id}")
+            
+            if response.status_code == 404:
+                print("\n❌ Incidencia no encontrada")
+                input("\nPresiona Enter para continuar...")
+                return
+            
+            inc = response.json()
+            
+            print(f"\nIncidencia: {inc['titulo']}")
+            print(f"Estado actual: {inc['estado']}")
+            
+            print("\n📊 Estados disponibles:")
+            estados = ["Abierto", "En Proceso", "Pendiente Cliente", "Resuelto", "Cerrado"]
+            
+            for i, estado in enumerate(estados, 1):
+                print(f"  {i}. {estado}")
+            
+            estado_num = input("\nSelecciona nuevo estado (1-5): ").strip()
+            
+            if not estado_num.isdigit() or int(estado_num) < 1 or int(estado_num) > 5:
+                print("\n❌ Estado no válido")
+                input("\nPresiona Enter para continuar...")
+                return
+            
+            nuevo_estado = estados[int(estado_num) - 1]
+            
+            response = self.session.put(
+                f"{SERVER_URL}/api/incidencias/{inc_id}",
+                json={"estado": nuevo_estado}
+            )
+            
+            if response.status_code == 200:
+                print(f"\n✅ Estado actualizado a: {nuevo_estado}")
+            else:
+                print("\n❌ Error al actualizar el estado")
+        
+        except Exception as e:
+            print(f"\n❌ Error: {e}")
+        
+        input("\nPresiona Enter para continuar...")
+    
+    def ver_usuarios(self):
+        self.mostrar_encabezado("Usuarios del Sistema")
+        
+        try:
+            response = self.session.get(f"{SERVER_URL}/api/usuarios")
+            usuarios = response.json()
+            
+            # Agrupar por rol
+            admins = [u for u in usuarios if u['rol'] == 'administrador']
+            tecnicos = [u for u in usuarios if u['rol'] == 'tecnico']
+            clientes = [u for u in usuarios if u['rol'] == 'cliente']
+            
+            print("👑 ADMINISTRADORES:")
+            print("-" * 70)
+            for u in admins:
+                print(f"ID: {u['id']:>2} | {u['nombre']:<30} | {u['email']}")
+            
+            print("\n🔧 TÉCNICOS:")
+            print("-" * 70)
+            for u in tecnicos:
+                print(f"ID: {u['id']:>2} | {u['nombre']:<30} | {u['email']}")
+            
+            print("\n👤 CLIENTES:")
+            print("-" * 70)
+            for u in clientes:
+                print(f"ID: {u['id']:>2} | {u['nombre']:<30} | {u['email']}")
+            
+            print(f"\n📊 RESUMEN:")
+            print(f"   Total usuarios: {len(usuarios)}")
+            print(f"   Administradores: {len(admins)}")
+            print(f"   Técnicos: {len(tecnicos)}")
+            print(f"   Clientes: {len(clientes)}")
+        
+        except Exception as e:
+            print(f"❌ Error: {e}")
+        
+        input("\nPresiona Enter para continuar...")
+    
+    def ver_estadisticas(self):
+        self.ver_dashboard()
+
+def main():
+    admin = AdministradorMastertech()
+    
+    if admin.login():
+        admin.menu_principal()
+
+if __name__ == "__main__":
+    main()

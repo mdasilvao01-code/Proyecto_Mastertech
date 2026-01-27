@@ -16,6 +16,20 @@ Vagrant.configure("2") do |config|
   # -*- mode: ruby -*-
   # vi: set ft=ruby :
 
+  # ============================================================================
+  # ROUTER - Gateway para salida a Internet
+  # ============================================================================
+  config.vm.define "router" do |router|
+    router.vm.box = "debian/bookworm64"
+    router.vm.hostname = "router.Mastertech.local"
+    
+    # Red interna (red1) - Gateway: 192.168.10.1
+    router.vm.network "private_network", ip: "192.168.10.1", virtualbox__intnet: "red1"
+    
+    # Salida a Internet - DHCP (obtendrá 192.168.10.x del DHCP físico)
+    router.vm.network "private_network", type: "dhcp"
+  end
+
   # Infra (DHCP, DNS, FTP)
   config.vm.define "infra" do |infra|
     infra.vm.box = "debian/bookworm64"

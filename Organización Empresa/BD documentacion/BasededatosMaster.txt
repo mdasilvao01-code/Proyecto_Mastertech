@@ -1,0 +1,59 @@
+USE mastertech;
+
+CREATE TABLE cliente (
+  id_cliente INT AUTO_INCREMENT PRIMARY KEY,
+  nombre VARCHAR(100),
+  email VARCHAR(100),
+  telefono VARCHAR(20),
+  empresa VARCHAR(100)
+);
+
+CREATE TABLE tecnico (
+  id_tecnico INT AUTO_INCREMENT PRIMARY KEY,
+  nombre VARCHAR(100),
+  especialidad VARCHAR(100)
+);
+
+CREATE TABLE servicio (
+  id_servicio INT AUTO_INCREMENT PRIMARY KEY,
+  tipo VARCHAR(50),
+  descripcion TEXT,
+  precio DECIMAL(10,2)
+);
+
+CREATE TABLE equipo (
+  id_equipo INT AUTO_INCREMENT PRIMARY KEY,
+  tipo VARCHAR(50),
+  marca VARCHAR(50),
+  modelo VARCHAR(50),
+  numero_serie VARCHAR(50)
+);
+
+CREATE TABLE incidencia (
+  id_incidencia INT AUTO_INCREMENT PRIMARY KEY,
+  fecha DATE,
+  estado VARCHAR(50),
+  observaciones TEXT,
+  id_cliente INT,
+  id_equipo INT,
+  FOREIGN KEY (id_cliente) REFERENCES cliente(id_cliente),
+  FOREIGN KEY (id_equipo) REFERENCES equipo(id_equipo)
+);
+
+CREATE TABLE reparacion (
+  id_reparacion INT AUTO_INCREMENT PRIMARY KEY,
+  fecha_inicio DATE,
+  fecha_fin DATE,
+  id_incidencia INT,
+  id_tecnico INT,
+  FOREIGN KEY (id_incidencia) REFERENCES incidencia(id_incidencia),
+  FOREIGN KEY (id_tecnico) REFERENCES tecnico(id_tecnico)
+);
+
+CREATE TABLE reparacion_servicio (
+  id_reparacion INT,
+  id_servicio INT,
+  PRIMARY KEY (id_reparacion, id_servicio),
+  FOREIGN KEY (id_reparacion) REFERENCES reparacion(id_reparacion),
+  FOREIGN KEY (id_servicio) REFERENCES servicio(id_servicio)
+);

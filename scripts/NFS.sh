@@ -1,26 +1,33 @@
 #!/bin/bash
 set -e
+export DEBIAN_FRONTEND=noninteractive
 
-# Instalar NFS server
+echo "🔧 Configurando NFS en nfs (192.168.40.12)..."
+
+echo "nameserver 8.8.8.8" > /etc/resolv.conf
+
 apt-get update -y
 apt-get install -y nfs-kernel-server
 
-# Crear carpeta compartida
 mkdir -p /var/www/html
 chown -R www-data:www-data /var/www/html
+chmod -R 775 /var/www/html
 
-# Añadir export solo si no existe ya
-if ! grep -q "/var/www/html 192.168.10.0/24" /etc/exports; then
-  echo "/var/www/html 192.168.10.0/24(rw,sync,no_subtree_check,no_root_squash)" >> /etc/exports
+# Exportar solo a la RED SERVICIO 192.168.40.0/24
+if ! grep -q "/var/www/html 192.168.40.0/24" /etc/exports; then
+  echo "/var/www/html 192.168.40.0/24(rw,sync,no_subtree_check,no_root_squash)" >> /etc/exports
 fi
 
-# Aplicar configuración
 exportfs -ra
-
 systemctl enable nfs-kernel-server
 systemctl restart nfs-kernel-server
 
-# Copiar (si existe) contenido desde /vagrant/php_app
-if [ -d /vagrant/php_app ]; then
-  cp -r /vagrant/php_app/* /var/www/html/ || true
+# Copiar app desde /vagrant/html
+if [ -d /vagrant/html ]; then
+  cp -r /vagrant/html/. /var/www/html/
+  chown -R www-data:www-data /var/www/html
+  chmod -R 775 /var/www/html
+  echo "✅ PHP copiado desde /vagrant/html/"
 fi
+
+echo "✅ NFS exportando /var/www/html a 192.168.40.0/24"

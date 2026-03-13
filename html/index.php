@@ -1,116 +1,104 @@
 <?php
 require_once 'db_config.php';
-logAccion('Vista página principal');
-
-$totalClientes = 0;
-$totalIncidencias = 0;
-$pendientes = 0;
-
-try {
-    $pdo = getDB();
-    $totalClientes = $pdo->query("SELECT COUNT(*) FROM cliente")->fetchColumn();
-    $totalIncidencias = $pdo->query("SELECT COUNT(*) FROM incidencia")->fetchColumn();
-    $pendientes = $pdo->query("SELECT COUNT(*) FROM incidencia WHERE estado = 'Pendiente'")->fetchColumn();
-} catch (Exception $e) {
-    // Silenciar error
-}
-
+if(isset($_SESSION['usuario_id'])){ header('Location:/dashboard.php'); exit(); }
 $servidor = gethostname();
 $ip = $_SERVER['SERVER_ADDR'];
+try{
+    $pdo=getDB();
+    $totalClientes=$pdo->query("SELECT COUNT(*) FROM cliente")->fetchColumn();
+    $totalInc=$pdo->query("SELECT COUNT(*) FROM incidencias")->fetchColumn();
+    $pendientes=$pdo->query("SELECT COUNT(*) FROM incidencias WHERE estado='Abierto'")->fetchColumn();
+}catch(Exception $e){$totalClientes=$totalInc=$pendientes=0;}
 ?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mastertech - Sistema de Gestión</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Mastertech — Sistema de Gestión</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="/style.css">
 </head>
-<body>
-    <nav class="navbar navbar-expand-lg navbar-dark">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="index.php">🏢 Mastertech</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#nav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse justify-content-end" id="nav">
-                <ul class="navbar-nav">
-                    <li class="nav-item"><a class="nav-link active" href="index.php">Inicio</a></li>
-                    <li class="nav-item"><a class="nav-link" href="clientes.php">Clientes</a></li>
-                    <li class="nav-item"><a class="nav-link" href="register_cliente.php">Nuevo Cliente</a></li>
-                    <li class="nav-item"><a class="nav-link" href="ver_incidencias.php">Incidencias</a></li>
-                    <li class="nav-item"><a class="nav-link" href="dashboard.php">Dashboard</a></li>
-                </ul>
-            </div>
-        </div>
-    </nav>
+<body style="background:var(--bg);">
 
-    <div class="hero">
-        <h1>🚀 Sistema Mastertech</h1>
-        <p>Gestión Completa de Clientes e Incidencias</p>
-        <p style="font-size: 0.9em;">Servidor: <strong><?php echo htmlspecialchars($servidor); ?></strong> | IP: <strong><?php echo htmlspecialchars($ip); ?></strong></p>
+<!-- NAV -->
+<nav style="background:var(--navy);padding:0 40px;height:64px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;">
+  <span style="font-family:'Syne',sans-serif;font-weight:800;color:#fff;font-size:1.25rem;letter-spacing:-.5px;">Mastertech</span>
+  <div style="display:flex;align-items:center;gap:24px;">
+    <a href="/tienda.php" style="color:#9ca3af;text-decoration:none;font-size:.9rem;font-weight:500;">Tienda</a>
+    <a href="/login.php" class="btn btn-ghost btn-sm" style="color:#9ca3af;border-color:#374151;">Acceder</a>
+    <a href="/registro.php" class="btn btn-primary btn-sm">Registrarse</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section style="background:var(--navy);padding:96px 40px;position:relative;overflow:hidden;">
+  <div style="position:absolute;top:-100px;right:-50px;width:500px;height:500px;border-radius:50%;background:radial-gradient(circle,rgba(59,130,246,.18) 0%,transparent 65%);pointer-events:none;"></div>
+  <div style="max-width:720px;">
+    <div style="display:inline-flex;align-items:center;gap:8px;background:rgba(59,130,246,.15);border:1px solid rgba(59,130,246,.3);border-radius:100px;padding:6px 14px;margin-bottom:24px;">
+      <span style="width:6px;height:6px;background:var(--blue);border-radius:50%;"></span>
+      <span style="font-size:.78rem;color:#93c5fd;font-weight:600;text-transform:uppercase;letter-spacing:1.2px;">Alta disponibilidad activa</span>
     </div>
-
-    <div class="container">
-        <div class="info-cards">
-            <div class="info-card">
-                <h3>👥 Clientes</h3>
-                <p><?php echo $totalClientes; ?></p>
-            </div>
-            <div class="info-card">
-                <h3>📋 Incidencias</h3>
-                <p><?php echo $totalIncidencias; ?></p>
-            </div>
-            <div class="info-card">
-                <h3>⚠️ Pendientes</h3>
-                <p><?php echo $pendientes; ?></p>
-            </div>
-            <div class="info-card">
-                <h3>🕐 Hora</h3>
-                <p><?php echo date('H:i'); ?></p>
-            </div>
-        </div>
-
-        <div class="row g-4 mt-3">
-            <div class="col-md-4">
-                <div class="card">
-                    <div class="card-body text-center p-4">
-                        <h2 style="font-size: 3em;">👥</h2>
-                        <h4>Clientes</h4>
-                        <p class="text-muted">Gestiona clientes</p>
-                        <a href="clientes.php" class="btn btn-primary mt-3">Ver Clientes</a>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="card">
-                    <div class="card-body text-center p-4">
-                        <h2 style="font-size: 3em;">📋</h2>
-                        <h4>Incidencias</h4>
-                        <p class="text-muted">Tickets y soporte</p>
-                        <a href="ver_incidencias.php" class="btn btn-primary mt-3">Ver Incidencias</a>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="card">
-                    <div class="card-body text-center p-4">
-                        <h2 style="font-size: 3em;">📊</h2>
-                        <h4>Dashboard</h4>
-                        <p class="text-muted">Estadísticas</p>
-                        <a href="dashboard.php" class="btn btn-primary mt-3">Ver Dashboard</a>
-                    </div>
-                </div>
-            </div>
-        </div>
+    <h1 style="font-size:3.2rem;color:#fff;line-height:1.1;margin-bottom:20px;">Infraestructura<br>gestionada con precisión.</h1>
+    <p style="font-size:1.1rem;color:#6b7280;max-width:540px;line-height:1.7;margin-bottom:36px;">Sistema centralizado para la gestión de incidencias, clientes y monitorización. Diseñado sobre arquitectura de alta disponibilidad con balanceo de carga.</p>
+    <div style="display:flex;gap:12px;flex-wrap:wrap;">
+      <a href="/registro.php" class="btn btn-primary btn-lg">Crear cuenta <i class="fa fa-arrow-right"></i></a>
+      <a href="/login.php" class="btn btn-ghost btn-lg" style="color:#9ca3af;border-color:#374151;">Iniciar sesión</a>
     </div>
+  </div>
+</section>
 
-    <footer class="footer">
-        <p>&copy; 2026 Mastertech | IES Albarregas - Proyecto Intermodular</p>
-        <p>Sistema de Alta Disponibilidad con Load Balancer</p>
-    </footer>
+<!-- STATS -->
+<section style="padding:40px;background:var(--card);border-bottom:1px solid var(--border);">
+  <div style="max-width:960px;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr);gap:32px;">
+    <?php
+    $stats=[
+      ['Clientes',$totalClientes,'fa-users','var(--blue)'],
+      ['Incidencias',$totalInc,'fa-ticket','var(--purple)'],
+      ['Abiertas',$pendientes,'fa-circle-dot','var(--orange)'],
+      ['Servidor',$servidor,'fa-server','var(--green)'],
+    ];
+    foreach($stats as [$label,$val,$icon,$color]):?>
+    <div style="text-align:center;">
+      <i class="fa <?=$icon?>" style="font-size:1.5rem;color:<?=$color?>;margin-bottom:10px;display:block;"></i>
+      <div style="font-family:'Syne',sans-serif;font-size:1.6rem;font-weight:800;color:var(--text);"><?=$val?></div>
+      <div style="font-size:.78rem;text-transform:uppercase;letter-spacing:1px;color:var(--text-3);font-weight:600;"><?=$label?></div>
+    </div>
+    <?php endforeach; ?>
+  </div>
+</section>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<!-- FEATURES -->
+<section style="padding:80px 40px;max-width:1100px;margin:0 auto;">
+  <div style="text-align:center;margin-bottom:52px;">
+    <h2 style="font-size:2rem;margin-bottom:12px;">Todo lo que necesitas</h2>
+    <p style="color:var(--text-2);max-width:480px;margin:0 auto;">Una plataforma completa para equipos de soporte IT y sus clientes.</p>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px;">
+    <?php
+    $features=[
+      ['fa-ticket','Gestión de incidencias','Crea, asigna y resuelve tickets de soporte con historial completo de comentarios.','var(--blue)'],
+      ['fa-users','Base de clientes','Registro completo de clientes con histórico de incidencias y datos de contacto.','var(--purple)'],
+      ['fa-store','Tienda online','Catálogo de productos tecnológicos con gestión de stock e información detallada.','var(--green)'],
+      ['fa-chart-bar','Dashboard analítico','Vista general de métricas clave: incidencias abiertas, tiempo de resolución y más.','var(--orange)'],
+      ['fa-file-lines','Informes exportables','Genera informes en PDF o TXT de cualquier incidencia con un solo clic.','var(--accent)'],
+      ['fa-shield-halved','Alta disponibilidad','Infraestructura con balanceo de carga y múltiples servidores web redundantes.','var(--red)'],
+    ];
+    foreach($features as [$icon,$title,$desc,$color]):?>
+    <div class="card" style="padding:24px;">
+      <div style="width:44px;height:44px;border-radius:12px;background:<?=$color?>1a;display:flex;align-items:center;justify-content:center;margin-bottom:16px;">
+        <i class="fa <?=$icon?>" style="color:<?=$color?>;font-size:1rem;"></i>
+      </div>
+      <h3 style="font-size:1rem;margin-bottom:8px;"><?=$title?></h3>
+      <p style="font-size:.875rem;color:var(--text-2);line-height:1.6;"><?=$desc?></p>
+    </div>
+    <?php endforeach; ?>
+  </div>
+</section>
+
+<footer style="background:var(--navy);padding:32px 40px;text-align:center;">
+  <p style="font-size:.8rem;color:#4b5563;">&copy; <?=date('Y')?> Mastertech &mdash; IES Albarregas &mdash; Proyecto Intermodular 2&ordm; ASIR &mdash; Mario Da Silva Ortega</p>
+</footer>
 </body>
 </html>

@@ -1,0 +1,58 @@
+MasterTech.lan
+├── OU=Sede Central
+│   ├── OU=Direccion General
+│   │   ├── G=Estrategia Corporativa
+│   │   └── G=Supervisión de Franquicias
+│
+│   ├── OU=Expansión Y Soporte
+│   │   ├── OU=Departamento Franquicias
+│   │   │   ├── G=Selección de Franquiciados
+│   │   │   ├── G=Formación Inicial y Continua
+│   │   │   └── G=Manuales Operativos
+│   │   └── OU=Departamento Técnico
+│   │       ├── G=Desarrollo de Soluciones
+│   │       ├── G=Soporte de Segundo Nivel
+│   │       └── G=Actualizaciones y Mejora Continua
+│
+│   ├── OU=Imagen Y Comunicación
+│   │   └── OU=Marketing&Comunicacion
+│   │       ├── G=Branding y Posicionamiento
+│   │       ├── G=Campañas Publicitarias
+│   │       └── G=Redes Sociales
+│
+│   └── OU=Gestión Financiera
+│       └── OU=Administración Y Finanzas
+│           ├── G=Facturación y Contabilidad
+│           ├── G=Control de Royalties
+│           └── G=Gestión de Contratos
+│
+├── OU=Franquicias Locales
+│   ├── OU=Madrid
+│   │   ├── G=Gerencia de Franquicia
+│   │   ├── G=Soporte Tecnico
+│   │   ├── G=Comercial y Ventas
+│   │   └── G=Consultoria y Formacion
+│
+│   ├── OU=Barcelona
+│   │   ├── G=Gerencia de Franquicia
+│   │   ├── G=Soporte Tecnico
+│   │   ├── G=Comercial y Ventas
+│   │   └── G=Consultoria y Formacion
+│
+│   ├── OU=Sevilla
+│   │   ├── G=Gerencia de Franquicia
+│   │   ├── G=Soporte Tecnico
+│   │   ├── G=Comercial y Ventas
+│   │   └── G=Consultoria y Formacion
+│
+│   ├── OU=Valencia
+│   │   ├── G=Gerencia de Franquicia
+│   │   ├── G=Soporte Tecnico
+│   │   ├── G=Comercial y Ventas
+│   │   └── G=Consultoria y Formacion
+│
+│   └── OU=Bilbao
+│       ├── G=Gerencia de Franquicia
+│       ├── G=Soporte Tecnico
+│       ├── G=Comercial y Ventas
+│       └── G=Consultoria y Formacion

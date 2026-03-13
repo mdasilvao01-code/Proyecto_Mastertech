@@ -1,14 +1,5 @@
-<footer class="footer">
-<div class="container">
-<div class="row">
-<div class="col-md-6 text-start">
-<p>&copy; 2026 MASTERTECH - Sistema de Gestión</p>
-<p>Mario Da Silva Ortega - 2º ASIR</p>
-</div>
-<div class="col-md-6 text-end">
-<p>Servidor: <?php echo gethostname(); ?></p>
-<p>IP: <?php echo $_SERVER['SERVER_ADDR']; ?></p>
-</div>
-</div>
-</div>
+<footer style="padding: 24px 32px; border-top: 1px solid var(--border); margin-top: auto; background: var(--card);">
+  <p style="font-size: 0.8rem; color: var(--text-3);">
+    &copy; <?= date('Y') ?> Mastertech &mdash; IES Albarregas &mdash; Proyecto Intermodular 2&ordm; ASIR
+  </p>
 </footer>

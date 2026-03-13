@@ -4,7 +4,7 @@ ini_set('display_errors', 0);
 ini_set('log_errors', 1);
 ini_set('error_log', '/tmp/php_errors.log');
 
-$host = "192.168.10.13";
+$host = "192.168.40.13";
 $usuario = "webuser";
 $password = "WebPass@2024";
 $database = "mastertech";
@@ -25,7 +25,7 @@ if (session_status() === PHP_SESSION_NONE) {
 
 function getDB() {
     try {
-        $dsn = "mysql:host=192.168.10.13;dbname=mastertech;charset=utf8mb4";
+        $dsn = "mysql:host=192.168.40.13;dbname=mastertech;charset=utf8mb4";
         $options = [
             PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
             PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,

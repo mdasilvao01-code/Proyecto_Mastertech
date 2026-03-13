@@ -1,145 +1,159 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 
-# All Vagrant configuration is done below. The "2" in Vagrant.configure
-# configures the configuration version (we support older styles for
-# backwards compatibility). Please don't change it unless you know what
-# you're doing.
+# ============================================================================
+# INFRAESTRUCTURA MASTERTECH - Topología completa
+#
+# RED EMPRESA (red1)  → 192.168.10.0/24
+#   router  → 192.168.10.1
+#   infra   → 192.168.10.10  (DHCP, DNS, FTP)
+#
+# RED DMZ (red2)      → 192.168.20.0/24
+#   router  → 192.168.20.1
+#   lb      → 192.168.20.16
+#   web1    → 192.168.20.12
+#   web2    → 192.168.20.15
+#
+# RED SERVICIO (red3) → 192.168.40.0/24
+#   web1    → 192.168.40.10
+#   web2    → 192.168.40.11
+#   nfs     → 192.168.40.12
+#   db      → 192.168.40.13
+#
+# ORDEN DE ARRANQUE:
+#   router → infra → nfs → db → lb → web1 → web2
+# ============================================================================
+
 Vagrant.configure("2") do |config|
-  # The most common configuration options are documented and commented below.
-  # For a complete reference, please see the online documentation at
-  # https://docs.vagrantup.com.
 
-  # Every Vagrant development environment requires a box. You can search for
-  # boxes at https://vagrantcloud.com/search.
-
-  # -*- mode: ruby -*-
-  # vi: set ft=ruby :
-
-  # ============================================================================
-  # ROUTER - Gateway para salida a Internet
-  # ============================================================================
+  # --------------------------------------------------------------------------
+  # 1. ROUTER
+  # --------------------------------------------------------------------------
   config.vm.define "router" do |router|
     router.vm.box = "debian/bookworm64"
     router.vm.hostname = "router.Mastertech.local"
-    
-    # Red interna (red1) - Gateway: 192.168.10.1
     router.vm.network "private_network", ip: "192.168.10.1", virtualbox__intnet: "red1"
-    
-    # Salida a Internet - DHCP (obtendrá 192.168.10.x del DHCP físico)
-    router.vm.network "private_network", type: "dhcp"
+    router.vm.network "private_network", ip: "192.168.20.1", virtualbox__intnet: "red2"
+    router.vm.provider "virtualbox" do |vb|
+      vb.memory = "512"
+      vb.cpus = 1
+      vb.name = "mastertech-router"
+    end
   end
 
-  # Infra (DHCP, DNS, FTP)
+  # --------------------------------------------------------------------------
+  # 2. INFRA - DHCP / DNS / FTP → 192.168.10.10
+  # --------------------------------------------------------------------------
   config.vm.define "infra" do |infra|
     infra.vm.box = "debian/bookworm64"
     infra.vm.hostname = "infra.Mastertech.local"
-    infra.vm.network "private_network", type: "dhcp"
     infra.vm.network "private_network", ip: "192.168.10.10", virtualbox__intnet: "red1"
-    infra.vm.network "public_network", bridge: "VirtualBox Host-Only Ethernet Adapter"
     infra.vm.provision "shell", path: "scripts/DHCPDNSFTP.sh"
+    infra.vm.provider "virtualbox" do |vb|
+      vb.memory = "1024"
+      vb.cpus = 1
+      vb.name = "mastertech-infra"
+    end
   end
 
-  # DB (MariaDB)
-  config.vm.define "db" do |db|
-    db.vm.box = "debian/bookworm64"
-    db.vm.hostname = "db.Mastertech.local"
-    db.vm.network "private_network", ip: "192.168.10.13", virtualbox__intnet: "red1"
-    db.vm.provision "shell", path: "scripts/DB.sh"
-  end
-
-  # NFS Server
+  # --------------------------------------------------------------------------
+  # 3. NFS → 192.168.40.12  ← ANTES que web1 y web2
+  # --------------------------------------------------------------------------
   config.vm.define "nfs" do |nfs|
     nfs.vm.box = "debian/bookworm64"
     nfs.vm.hostname = "nfs.Mastertech.local"
-    nfs.vm.network "private_network", ip: "192.168.10.14", virtualbox__intnet: "red1"
+    nfs.vm.network "private_network", ip: "192.168.40.12", virtualbox__intnet: "red3"
+    nfs.vm.synced_folder "./html", "/vagrant/html"
     nfs.vm.provision "shell", path: "scripts/NFS.sh"
+    nfs.vm.provider "virtualbox" do |vb|
+      vb.memory = "512"
+      vb.cpus = 1
+      vb.name = "mastertech-nfs"
+    end
   end
 
-  # Web1
-  config.vm.define "web1" do |web1|
-    web1.vm.box = "debian/bookworm64"
-    web1.vm.hostname = "web1.Mastertech.local"
-    web1.vm.network "private_network", ip: "192.168.10.12", virtualbox__intnet: "red1"
-    web1.vm.provision "shell", path: "scripts/WEB.sh"
+  # --------------------------------------------------------------------------
+  # 4. DB - MariaDB → 192.168.40.13  ← ANTES que web1 y web2
+  # --------------------------------------------------------------------------
+  config.vm.define "db" do |db|
+    db.vm.box = "debian/bookworm64"
+    db.vm.hostname = "db.Mastertech.local"
+    db.vm.network "private_network", ip: "192.168.40.13", virtualbox__intnet: "red3"
+    db.vm.provision "shell", path: "scripts/DB.sh"
+    db.vm.provider "virtualbox" do |vb|
+      vb.memory = "1024"
+      vb.cpus = 1
+      vb.name = "mastertech-db"
+    end
   end
 
-  # Web2
-  config.vm.define "web2" do |web2|
-    web2.vm.box = "debian/bookworm64"
-    web2.vm.hostname = "web2.Mastertech.local"
-    web2.vm.network "private_network", ip: "192.168.10.15", virtualbox__intnet: "red1"
-    web2.vm.network "forwarded_port", guest: 80, host: 8081
-    web2.vm.provision "shell", path: "scripts/WEB.sh"
-  end
-
-  # Load Balancer
+  # --------------------------------------------------------------------------
+  # 5. LB - HAProxy → 192.168.20.16
+  # --------------------------------------------------------------------------
   config.vm.define "lb" do |lb|
     lb.vm.box = "debian/bookworm64"
     lb.vm.hostname = "lb.Mastertech.local"
-    lb.vm.network "private_network", ip: "192.168.10.16", virtualbox__intnet: "red1"
+    lb.vm.network "private_network", ip: "192.168.20.16", virtualbox__intnet: "red2"
     lb.vm.network "forwarded_port", guest: 80, host: 8082
     lb.vm.provision "shell", path: "scripts/LB.sh"
+    lb.vm.provider "virtualbox" do |vb|
+      vb.memory = "512"
+      vb.cpus = 1
+      vb.name = "mastertech-lb"
+    end
   end
 
-  # Disable automatic box update checking. If you disable this, then
-  # boxes will only be checked for updates when the user runs
-  # `vagrant box outdated`. This is not recommended.
-  # config.vm.box_check_update = false
+  # --------------------------------------------------------------------------
+  # 6. WEB1 - red2: 192.168.20.12 / red3: 192.168.40.10
+  # --------------------------------------------------------------------------
+  config.vm.define "web1" do |web1|
+    web1.vm.box = "debian/bookworm64"
+    web1.vm.hostname = "web1.Mastertech.local"
+    web1.vm.network "private_network", ip: "192.168.20.12", virtualbox__intnet: "red2"
+    web1.vm.network "private_network", ip: "192.168.40.10", virtualbox__intnet: "red3"
+    web1.vm.provision "shell", path: "scripts/WEB.sh"
+    web1.vm.provider "virtualbox" do |vb|
+      vb.memory = "512"
+      vb.cpus = 1
+      vb.name = "mastertech-web1"
+    end
+  end
 
-  # Create a forwarded port mapping which allows access to a specific port
-  # within the machine from a port on the host machine. In the example below,
-  # accessing "localhost:8080" will access port 80 on the guest machine.
-  # NOTE: This will enable public access to the opened port
-  # config.vm.network "forwarded_port", guest: 80, host: 8080
+  # --------------------------------------------------------------------------
+  # 7. WEB2 - red2: 192.168.20.15 / red3: 192.168.40.11
+  # --------------------------------------------------------------------------
+  config.vm.define "web2" do |web2|
+    web2.vm.box = "debian/bookworm64"
+    web2.vm.hostname = "web2.Mastertech.local"
+    web2.vm.network "private_network", ip: "192.168.20.15", virtualbox__intnet: "red2"
+    web2.vm.network "private_network", ip: "192.168.40.11", virtualbox__intnet: "red3"
+    web2.vm.network "forwarded_port", guest: 80, host: 8081
+    web2.vm.provision "shell", path: "scripts/WEB.sh"
+    web2.vm.provider "virtualbox" do |vb|
+      vb.memory = "512"
+      vb.cpus = 1
+      vb.name = "mastertech-web2"
+    end
+  end
 
-  # Create a forwarded port mapping which allows access to a specific port
-  # within the machine from a port on the host machine and only allow access
-  # via 127.0.0.1 to disable public access
-  # config.vm.network "forwarded_port", guest: 80, host: 8080, host_ip: "127.0.0.1"
 
-  # Create a private network, which allows host-only access to the machine
-  # using a specific IP.
-  # config.vm.network "private_network", ip: "192.168.33.10"
+  # ─────────────────────────────────────────────────────────────────────────────
+  # 8. FOG Y ZABBIX
+  # ─────────────────────────────────────────────────────────────────────────────
 
-  # Create a public network, which generally matched to bridged network.
-  # Bridged networks make the machine appear as another physical device on
-  # your network.
-  # config.vm.network "public_network"
+  config.vm.define "servicios" do |svc|
+    svc.vm.box = "debian/bookworm64"
+    svc.vm.hostname = "servicios"
+    svc.vm.network "private_network", ip: "192.168.10.20", virtualbox__intnet: "red1"
+    svc.vm.network "private_network", ip: "192.168.20.20", virtualbox__intnet: "red2"  # ← AÑADIR
+    svc.vm.network "private_network", ip: "192.168.40.20", virtualbox__intnet: "red3"  # ← AÑADIR
+    svc.vm.network "forwarded_port",  guest: 80, host: 8083
+    svc.vm.provider "virtualbox" do |vb|
+      vb.name   = "mastertech-servicios"
+      vb.memory = 2048
+      vb.cpus   = 2
+    end
+    svc.vm.provision "shell", path: "scripts/SERVICIOS.sh"
+  end
 
-  # Share an additional folder to the guest VM. The first argument is
-  # the path on the host to the actual folder. The second argument is
-  # the path on the guest to mount the folder. And the optional third
-  # argument is a set of non-required options.
-  # config.vm.synced_folder "../data", "/vagrant_data"
-
-  # Disable the default share of the current code directory. Doing this
-  # provides improved isolation between the vagrant box and your host
-  # by making sure your Vagrantfile isn't accessible to the vagrant box.
-  # If you use this you may want to enable additional shared subfolders as
-  # shown above.
-  # config.vm.synced_folder ".", "/vagrant", disabled: true
-
-  # Provider-specific configuration so you can fine-tune various
-  # backing providers for Vagrant. These expose provider-specific options.
-  # Example for VirtualBox:
-  #
-  # config.vm.provider "virtualbox" do |vb|
-  #   # Display the VirtualBox GUI when booting the machine
-  #   vb.gui = true
-  #
-  #   # Customize the amount of memory on the VM:
-  #   vb.memory = "1024"
-  # end
-  #
-  # View the documentation for the provider you are using for more
-  # information on available options.
-
-  # Enable provisioning with a shell script. Additional provisioners such as
-  # Ansible, Chef, Docker, Puppet and Salt are also available. Please see the
-  # documentation for more information about their specific syntax and use.
-  # config.vm.provision "shell", inline: <<-SHELL
-  #   apt-get update
-  #   apt-get install -y apache2
-  # SHELL
 end

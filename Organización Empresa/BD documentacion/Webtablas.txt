@@ -1,0 +1,94 @@
+-- TABLA: EMPRESA_CLIENTE
+-- ---------------------------
+CREATE TABLE EMPRESA_CLIENTE (
+    id_empresa       INT PRIMARY KEY AUTO_INCREMENT,
+    nombre           VARCHAR(100) NOT NULL,
+    sector           VARCHAR(80),
+    direccion        VARCHAR(150),
+    telefono         VARCHAR(20)
+);
+
+-- ---------------------------
+-- TABLA: CONTACTO_EMPRESA
+-- ---------------------------
+CREATE TABLE CONTACTO_EMPRESA (
+    id_contacto      INT PRIMARY KEY AUTO_INCREMENT,
+    id_empresa       INT NOT NULL,
+    nombre_contacto  VARCHAR(100) NOT NULL,
+    correo           VARCHAR(100),
+    telefono         VARCHAR(20),
+    FOREIGN KEY (id_empresa) REFERENCES EMPRESA_CLIENTE(id_empresa)
+);
+
+-- ---------------------------
+-- TABLA: SERVICIOS
+-- ---------------------------
+CREATE TABLE SERVICIOS (
+    id_servicio      INT PRIMARY KEY AUTO_INCREMENT,
+    nombre           VARCHAR(100) NOT NULL,
+    tipo             VARCHAR(50),
+    precio_base      DECIMAL(10,2)
+);
+
+-- ---------------------------
+-- TABLA: CONTRATOS
+-- ---------------------------
+CREATE TABLE CONTRATOS (
+    id_contrato      INT PRIMARY KEY AUTO_INCREMENT,
+    id_empresa       INT NOT NULL,
+    id_servicio      INT NOT NULL,
+    fecha_inicio     DATE,
+    fecha_fin        DATE,
+    estado           VARCHAR(30),
+    FOREIGN KEY (id_empresa) REFERENCES EMPRESA_CLIENTE(id_empresa),
+    FOREIGN KEY (id_servicio) REFERENCES SERVICIOS(id_servicio)
+);
+
+-- ---------------------------
+-- TABLA: EQUIPOS
+-- ---------------------------
+CREATE TABLE EQUIPOS (
+    id_equipo        INT PRIMARY KEY AUTO_INCREMENT,
+    id_empresa       INT NOT NULL,
+    tipo             VARCHAR(50),
+    modelo           VARCHAR(100),
+    numero_serie     VARCHAR(100),
+    FOREIGN KEY (id_empresa) REFERENCES EMPRESA_CLIENTE(id_empresa)
+);
+
+-- ---------------------------
+-- TABLA: TICKETS
+-- ---------------------------
+CREATE TABLE TICKETS (
+    id_ticket        INT PRIMARY KEY AUTO_INCREMENT,
+    id_contrato      INT NOT NULL,
+    descripcion      VARCHAR(300),
+    estado           VARCHAR(30),
+    fecha_creacion   DATE,
+    FOREIGN KEY (id_contrato) REFERENCES CONTRATOS(id_contrato)
+);
+
+-- ---------------------------
+-- TABLA: REPARACIONES
+-- ---------------------------
+CREATE TABLE REPARACIONES (
+    id_reparacion    INT PRIMARY KEY AUTO_INCREMENT,
+    id_ticket        INT NOT NULL,
+    id_equipo        INT NOT NULL,
+    diagnostico      VARCHAR(300),
+    solucion         VARCHAR(300),
+    fecha_reparacion DATE,
+    FOREIGN KEY (id_ticket) REFERENCES TICKETS(id_ticket),
+    FOREIGN KEY (id_equipo) REFERENCES EQUIPOS(id_equipo)
+);
+
+-- ---------------------------
+-- TABLA: FACTURAS
+-- ---------------------------
+CREATE TABLE FACTURAS (
+    id_factura       INT PRIMARY KEY AUTO_INCREMENT,
+    id_contrato      INT NOT NULL,
+    fecha_emision    DATE,
+    total            DECIMAL(10,2),
+    FOREIGN KEY (id_contrato) REFERENCES CONTRATOS(id_contrato)
+);

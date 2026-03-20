@@ -59,11 +59,13 @@ Vagrant.configure("2") do |config|
   # --------------------------------------------------------------------------
   # 3. NFS → 192.168.40.12  ← ANTES que web1 y web2
   # --------------------------------------------------------------------------
-  config.vm.define "nfs" do |nfs|
+    config.vm.define "nfs" do |nfs|
     nfs.vm.box = "debian/bookworm64"
     nfs.vm.hostname = "nfs.Mastertech.local"
     nfs.vm.network "private_network", ip: "192.168.40.12", virtualbox__intnet: "red3"
-    nfs.vm.synced_folder "./html", "/vagrant/html"
+    # ✅ Sin coma colgante al final
+    nfs.vm.synced_folder "C:/Users/madas/Documents/Poyecto_Mastertech/html", "/vagrant/html",
+      type: "virtualbox"
     nfs.vm.provision "shell", path: "scripts/NFS.sh"
     nfs.vm.provider "virtualbox" do |vb|
       vb.memory = "512"

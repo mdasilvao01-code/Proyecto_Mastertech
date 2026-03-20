@@ -32,7 +32,7 @@ if ($_SERVER['REQUEST_METHOD']==='POST') {
     }
 }
 
-$stmt = $pdo->prepare("SELECT c.*,u.nombre as usuario_nombre,u.rol FROM comentarios c JOIN usuarios u ON c.usuario_id=u.id WHERE c.incidencia_id=? ORDER BY c.fecha DESC");
+$stmt = $pdo->prepare("SELECT c.*,u.nombre as usuario_nombre,u.rol FROM comentarios c JOIN usuarios u ON c.usuario_id=u.id WHERE c.incidencia_id=? ORDER BY c.created_at DESC");
 $stmt->execute([$id]);
 $comentarios = $stmt->fetchAll();
 
@@ -103,7 +103,7 @@ if ($_SESSION['rol']=='admin')
               </div>
               <div>
                 <div style="font-size:.75rem;text-transform:uppercase;letter-spacing:1px;color:var(--text-3);font-weight:600;margin-bottom:4px;">Fecha</div>
-                <div><?=date('d/m/Y H:i',strtotime($inc['fecha_creacion']))?></div>
+                <div><?=date('d/m/Y H:i',strtotime($inc['created_at']))?></div>
               </div>
             </div>
             <hr>
@@ -135,7 +135,7 @@ if ($_SESSION['rol']=='admin')
                   <div class="comment-meta">
                     <strong><?=htmlspecialchars($com['usuario_nombre'])?></strong>
                     <span class="badge badge-<?=$com['rol']?>" style="font-size:.7rem;"><?=ucfirst($com['rol'])?></span>
-                    <span><?=date('d/m/Y H:i',strtotime($com['fecha']))?></span>
+                    <span><?=date('d/m/Y H:i',strtotime($com['created_at']))?></span>
                   </div>
                   <div class="comment-text"><?=nl2br(htmlspecialchars($com['comentario']))?></div>
                 </div>

@@ -1,0 +1,40 @@
+=====================================
+   INFORME DE INCIDENCIA #6
+   SISTEMA MASTERTECH
+=====================================
+
+INFORMACIÓN GENERAL
+-------------------
+ID: #6
+Título: hola
+Estado: abierta
+Prioridad: media
+Categoría: Hardware
+Fecha Creación: 01/01/1970 00:00:00
+
+CLIENTE
+-------
+Nombre: si
+Email: si@gmail.com
+Empresa: dv
+
+TÉCNICO ASIGNADO
+----------------
+Nombre: Sin asignar
+Email: N/A
+
+DESCRIPCIÓN
+-----------
+iohoiñ
+
+HISTORIAL DE COMENTARIOS
+------------------------
+
+[20/03/2026 09:35] si (Cliente):
+cuando puedas
+
+
+=====================================
+Generado: 20/03/2026 09:39:06
+Por: si
+=====================================

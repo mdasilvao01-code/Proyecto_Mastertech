@@ -27,7 +27,7 @@ $stmt = $pdo->prepare("SELECT c.*, u.nombre as usuario_nombre, u.rol
     FROM comentarios c 
     JOIN usuarios u ON c.usuario_id = u.id 
     WHERE c.incidencia_id = ? 
-    ORDER BY c.fecha ASC");
+    ORDER BY c.created_at ASC");
 $stmt->execute([$id]);
 $comentarios = $stmt->fetchAll();
 
@@ -48,7 +48,7 @@ if ($tipo == 'txt') {
     $contenido .= "Estado: " . $inc['estado'] . "\n";
     $contenido .= "Prioridad: " . $inc['prioridad'] . "\n";
     $contenido .= "Categoría: " . $inc['categoria'] . "\n";
-    $contenido .= "Fecha Creación: " . date('d/m/Y H:i:s', strtotime($inc['fecha_creacion'])) . "\n\n";
+    $contenido .= "Fecha Creación: " . date('d/m/Y H:i:s', strtotime($inc['created_at'])) . "\n\n";
     
     $contenido .= "CLIENTE\n";
     $contenido .= "-------\n";
@@ -70,7 +70,7 @@ if ($tipo == 'txt') {
         $contenido .= "------------------------\n\n";
         
         foreach ($comentarios as $com) {
-            $contenido .= "[" . date('d/m/Y H:i', strtotime($com['fecha'])) . "] ";
+            $contenido .= "[" . date('d/m/Y H:i', strtotime($com['created_at'])) . "] ";
             $contenido .= $com['usuario_nombre'] . " (" . ucfirst($com['rol']) . "):\n";
             $contenido .= $com['comentario'] . "\n\n";
         }
@@ -130,7 +130,7 @@ if ($tipo == 'txt') {
                 <div class="label">Estado:</div><div>' . $inc['estado'] . '</div>
                 <div class="label">Prioridad:</div><div><span class="badge badge-' . strtolower($inc['prioridad']) . '">' . $inc['prioridad'] . '</span></div>
                 <div class="label">Categoría:</div><div>' . $inc['categoria'] . '</div>
-                <div class="label">Fecha:</div><div>' . date('d/m/Y H:i', strtotime($inc['fecha_creacion'])) . '</div>
+                <div class="label">Fecha:</div><div>' . date('d/m/Y H:i', strtotime($inc['created_at'])) . '</div>
             </div>
         </div>
         
@@ -162,7 +162,7 @@ if ($tipo == 'txt') {
         
         foreach ($comentarios as $com) {
             $html .= '<div class="comentario">
-                <strong>' . htmlspecialchars($com['usuario_nombre']) . '</strong> (' . ucfirst($com['rol']) . ') - ' . date('d/m/Y H:i', strtotime($com['fecha'])) . '<br>
+                <strong>' . htmlspecialchars($com['usuario_nombre']) . '</strong> (' . ucfirst($com['rol']) . ') - ' . date('d/m/Y H:i', strtotime($com['created_at'])) . '<br>
                 ' . nl2br(htmlspecialchars($com['comentario'])) . '
             </div>';
         }

@@ -100,7 +100,6 @@ $tc          = array_sum($_SESSION['carrito']);
 
   <div class="prod-layout">
 
-    <!-- IMAGEN -->
     <div class="card">
       <div class="prod-img-wrap">
         <?php if (!empty($producto['imagen'])): ?>
@@ -123,7 +122,6 @@ $tc          = array_sum($_SESSION['carrito']);
       </div>
     </div>
 
-    <!-- DATOS -->
     <div style="display:flex;flex-direction:column;gap:18px;">
 
       <div>
@@ -180,7 +178,6 @@ $tc          = array_sum($_SESSION['carrito']);
     </div>
   </div>
 
-  <!-- ESPECIFICACIONES -->
   <div class="card" style="margin-top:24px;">
     <div class="card-header"><h3>Especificaciones técnicas</h3></div>
     <div class="table-wrapper">

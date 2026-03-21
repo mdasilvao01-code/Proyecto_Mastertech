@@ -24,7 +24,6 @@ try{
   <style>
     body { background: var(--bg); overflow-x: hidden; }
 
-    /* ── NAVBAR ── */
     .pub-nav {
       position: sticky; top: 0; z-index: 100;
       height: 62px;
@@ -56,7 +55,6 @@ try{
     }
     .pub-nav-links a.link:hover { color: var(--text); background: var(--glass-2); }
 
-    /* ── HERO ── */
     .hero {
       min-height: calc(100vh - 62px);
       display: flex; align-items: center;
@@ -69,7 +67,6 @@ try{
         var(--bg);
     }
 
-    /* Grid */
     .hero::before {
       content: '';
       position: absolute; inset: 0;
@@ -81,7 +78,6 @@ try{
       pointer-events: none;
     }
 
-    /* Orbs */
     .orb {
       position: absolute;
       border-radius: 50%;
@@ -156,7 +152,6 @@ try{
 
     .hero-btns { display: flex; gap: 12px; flex-wrap: wrap; }
 
-    /* ── STATS STRIP ── */
     .stats-strip {
       padding: 36px 48px;
       background: rgba(13,25,43,.6);
@@ -205,7 +200,6 @@ try{
       font-weight: 600;
     }
 
-    /* ── FEATURES ── */
     .features-section {
       padding: 100px 48px;
       max-width: 1200px;
@@ -274,7 +268,6 @@ try{
     .feature-card h3 { font-size: .95rem; margin-bottom: 8px; }
     .feature-card p  { font-size: .875rem; color: var(--text-2); line-height: 1.65; }
 
-    /* ── HOW IT WORKS ── */
     .how-section {
       padding: 80px 48px;
       background: rgba(13,25,43,.5);
@@ -305,7 +298,6 @@ try{
     .how-step h3 { font-size: 1rem; margin-bottom: 8px; }
     .how-step p  { font-size: .875rem; color: var(--text-2); line-height: 1.65; }
 
-    /* ── CTA ── */
     .cta-section {
       padding: 100px 48px;
       text-align: center;
@@ -331,7 +323,6 @@ try{
     }
     .cta-section p { color: var(--text-2); font-size: 1rem; margin-bottom: 36px; }
 
-    /* ── FOOTER ── */
     .pub-footer {
       background: var(--navy);
       border-top: 1px solid var(--border);
@@ -350,7 +341,6 @@ try{
     }
     .pub-footer p { font-size: .78rem; color: var(--text-3); }
 
-    /* server badge */
     .server-badge {
       display: inline-flex; align-items: center; gap: 8px;
       background: rgba(16,185,129,.1);
@@ -383,7 +373,6 @@ try{
 </head>
 <body>
 
-<!-- NAV -->
 <nav class="pub-nav">
   <a href="/index.php" class="pub-nav-logo">
     <span class="brand-dot"></span>
@@ -396,7 +385,6 @@ try{
   </div>
 </nav>
 
-<!-- HERO -->
 <section class="hero">
   <div class="orb orb-1"></div>
   <div class="orb orb-2"></div>
@@ -438,7 +426,6 @@ try{
   </div>
 </section>
 
-<!-- STATS STRIP -->
 <div class="stats-strip">
   <div class="stats-strip-inner">
     <?php
@@ -458,7 +445,6 @@ try{
   </div>
 </div>
 
-<!-- FEATURES -->
 <section class="features-section">
   <div>
     <div class="section-label">Capacidades</div>
@@ -488,7 +474,6 @@ try{
   </div>
 </section>
 
-<!-- HOW IT WORKS -->
 <section class="how-section">
   <div class="how-inner">
     <div style="text-align:center;">
@@ -516,7 +501,6 @@ try{
   </div>
 </section>
 
-<!-- CTA -->
 <section class="cta-section">
   <div style="position:relative;z-index:2;">
     <div class="glow-pill" style="margin: 0 auto 24px; width: fit-content;">
@@ -536,7 +520,6 @@ try{
   </div>
 </section>
 
-<!-- FOOTER -->
 <footer class="pub-footer">
   <div class="pub-footer-logo">
     <span style="color:var(--cyan)">M</span>astertech

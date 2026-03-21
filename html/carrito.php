@@ -201,7 +201,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['finalizar'])) {
 </div>
 <?php endif; ?>
 
-<!-- SUCCESS MODAL -->
 <div id="success-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:600;align-items:center;justify-content:center;">
   <div style="background:var(--navy-2);border:1px solid rgba(16,185,129,.3);border-radius:var(--radius);padding:40px;max-width:440px;width:90%;text-align:center;">
     <div style="width:70px;height:70px;border-radius:50%;background:rgba(16,185,129,.12);border:2px solid var(--green);display:flex;align-items:center;justify-content:center;margin:0 auto 20px;">

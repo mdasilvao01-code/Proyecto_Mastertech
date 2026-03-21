@@ -75,9 +75,7 @@ if ($_SESSION['rol']=='admin')
     <?php endif; ?>
 
     <div style="display:grid;grid-template-columns:1fr 340px;gap:20px;align-items:start;">
-      <!-- LEFT -->
       <div style="display:flex;flex-direction:column;gap:20px;">
-        <!-- Detail card -->
         <div class="card">
           <div class="card-header">
             <h3>Detalles de la incidencia</h3>
@@ -114,7 +112,6 @@ if ($_SESSION['rol']=='admin')
           </div>
         </div>
 
-        <!-- Comments -->
         <div class="card">
           <div class="card-header"><h3>Comentarios (<?=count($comentarios)?>)</h3></div>
           <div class="card-body">
@@ -147,7 +144,6 @@ if ($_SESSION['rol']=='admin')
         </div>
       </div>
 
-      <!-- RIGHT SIDEBAR -->
       <div style="display:flex;flex-direction:column;gap:16px;">
         <?php if(in_array($_SESSION['rol'],['admin','tecnico'])): ?>
         <div class="card">

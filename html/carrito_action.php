@@ -1,7 +1,6 @@
 <?php
 require_once 'db_config.php';
 
-// Inicializar carrito en sesión
 if (!isset($_SESSION['carrito'])) {
     $_SESSION['carrito'] = [];
 }
@@ -24,7 +23,6 @@ try {
                 if ($prod) {
                     $actual = $_SESSION['carrito'][$producto_id] ?? 0;
                     $nueva  = $actual + max(1, $cantidad);
-                    // No superar stock
                     $_SESSION['carrito'][$producto_id] = min($nueva, $prod['stock']);
                 }
             }
@@ -55,10 +53,8 @@ try {
     }
 
 } catch (Exception $e) {
-    // Silenciar errores de BD en acciones de carrito
 }
 
-// Responder con JSON si es petición AJAX
 if (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) &&
     strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest') {
     header('Content-Type: application/json');
@@ -67,6 +63,5 @@ if (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) &&
     exit();
 }
 
-// Redirección normal
 header('Location: ' . $redirect);
 exit();

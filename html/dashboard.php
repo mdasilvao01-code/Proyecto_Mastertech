@@ -25,7 +25,7 @@ try {
     $total=$abiertas=$proceso=$resueltas=$criticas=$clientes_total=0; $recientes=[];
 }
 
-// Calc resolution rate
+
 $resRate = $total > 0 ? round(($resueltas / $total) * 100) : 0;
 ?>
 <!DOCTYPE html>
@@ -39,14 +39,12 @@ $resRate = $total > 0 ? round(($resueltas / $total) * 100) : 0;
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <link rel="stylesheet" href="/style.css">
   <style>
-    /* Priority bar */
     .prio-bar { display:flex; align-items:center; gap:10px; margin-bottom:8px; }
     .prio-bar-label { font-size:.8rem; color:var(--text-2); width:80px; flex-shrink:0; }
     .prio-bar-track { flex:1; height:6px; background:rgba(255,255,255,.06); border-radius:3px; overflow:hidden; }
     .prio-bar-fill { height:100%; border-radius:3px; transition: width .6s ease; }
     .prio-bar-count { font-size:.8rem; color:var(--text-3); width:30px; text-align:right; flex-shrink:0; }
 
-    /* Ring chart */
     .ring-wrap { position:relative; width:100px; height:100px; margin:0 auto; }
     .ring-wrap svg { transform: rotate(-90deg); }
     .ring-center {
@@ -57,7 +55,6 @@ $resRate = $total > 0 ? round(($resueltas / $total) * 100) : 0;
     .ring-val { font-family:'Syne',sans-serif; font-size:1.3rem; font-weight:800; color:var(--text); line-height:1; }
     .ring-lbl { font-size:.65rem; color:var(--text-3); text-transform:uppercase; letter-spacing:1px; }
 
-    /* Quick actions */
     .quick-actions {
       display:grid; grid-template-columns:1fr 1fr; gap:10px;
     }
@@ -107,7 +104,6 @@ $resRate = $total > 0 ? round(($resueltas / $total) * 100) : 0;
 
   <div class="content">
 
-    <!-- Welcome Banner -->
     <div class="welcome-banner">
       <div class="welcome-text">
         <h3>Hola, <?=htmlspecialchars($_SESSION['nombre'])?>! 👋</h3>
@@ -116,7 +112,6 @@ $resRate = $total > 0 ? round(($resueltas / $total) * 100) : 0;
       <a href="/incidencias.php?estado=Abierto" class="btn btn-primary btn-sm">Ver abiertas <i class="fa fa-arrow-right"></i></a>
     </div>
 
-    <!-- STATS -->
     <div class="stats-row">
       <?php
       $stats=[
@@ -136,9 +131,7 @@ $resRate = $total > 0 ? round(($resueltas / $total) * 100) : 0;
       <?php endforeach; ?>
     </div>
 
-    <!-- TWO COL LAYOUT -->
     <div class="two-col">
-      <!-- LEFT: Recent incidents -->
       <div class="card">
         <div class="card-header">
           <h3>Incidencias recientes</h3>
@@ -177,15 +170,13 @@ $resRate = $total > 0 ? round(($resueltas / $total) * 100) : 0;
         <?php endif; ?>
       </div>
 
-      <!-- RIGHT: Widgets -->
       <div style="display:flex;flex-direction:column;gap:16px;">
 
-        <!-- Resolution rate ring -->
         <div class="card">
           <div class="card-header"><h3>Tasa de resolución</h3></div>
           <div class="card-body" style="text-align:center;">
             <?php
-            $circ = 2 * M_PI * 38; // r=38
+            $circ = 2 * M_PI * 38; 
             $dash = ($resRate / 100) * $circ;
             ?>
             <div class="ring-wrap">
@@ -233,7 +224,6 @@ $resRate = $total > 0 ? round(($resueltas / $total) * 100) : 0;
           </div>
         </div>
 
-        <!-- Quick actions -->
         <div class="card">
           <div class="card-header"><h3>Acciones rápidas</h3></div>
           <div class="card-body">

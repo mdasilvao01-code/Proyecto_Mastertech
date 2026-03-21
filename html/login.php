@@ -41,7 +41,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       grid-template-columns: 1fr 1fr;
     }
 
-    /* ── LEFT ── */
     .login-left {
       background: var(--navy);
       display: flex;
@@ -126,7 +125,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       letter-spacing: 1px;
     }
 
-    /* ── RIGHT ── */
     .login-right {
       background: var(--bg);
       display: flex;
@@ -202,7 +200,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <body>
 <div class="login-page">
 
-  <!-- LEFT -->
   <div class="login-left">
     <div class="orb1"></div>
     <div class="orb2"></div>
@@ -242,7 +239,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </div>
   </div>
 
-  <!-- RIGHT -->
+
   <div class="login-right">
     <div class="lf-wrap">
       <h2>Bienvenido de nuevo</h2>

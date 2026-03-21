@@ -15,7 +15,6 @@ $inicial = strtoupper(substr($nombre, 0, 1));
     <div class="brand-sub">Sistema de Gestión</div>
   </div>
 
-  <!-- PRINCIPAL -->
   <div class="sidebar-section">
     <div class="sidebar-section-title">Principal</div>
     <a href="/dashboard.php" class="nav-item <?= $current=='dashboard.php' ? 'active' : '' ?>">
@@ -23,7 +22,6 @@ $inicial = strtoupper(substr($nombre, 0, 1));
     </a>
   </div>
 
-  <!-- GESTIÓN -->
   <div class="sidebar-section">
     <div class="sidebar-section-title">Gestión</div>
     <a href="/incidencias.php" class="nav-item <?= $current=='incidencias.php' ? 'active' : '' ?>">
@@ -42,7 +40,6 @@ $inicial = strtoupper(substr($nombre, 0, 1));
     <?php endif; ?>
   </div>
 
-  <!-- TIENDA -->
   <div class="sidebar-section">
     <div class="sidebar-section-title">Tienda</div>
     <a href="/tienda.php" class="nav-item <?= $current=='tienda.php' ? 'active' : '' ?>">
@@ -50,7 +47,6 @@ $inicial = strtoupper(substr($nombre, 0, 1));
     </a>
   </div>
 
-  <!-- FOOTER -->
   <div class="sidebar-footer">
     <div class="user-pill">
       <div class="user-avatar"><?= htmlspecialchars($inicial) ?></div>

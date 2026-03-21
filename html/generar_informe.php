@@ -7,7 +7,6 @@ $tipo = $_GET['tipo'] ?? 'txt';
 
 $pdo = getDB();
 
-// Obtener incidencia
 $stmt = $pdo->prepare("SELECT i.*, 
     uc.nombre as cliente_nombre, uc.email as cliente_email, uc.empresa as cliente_empresa,
     ut.nombre as tecnico_nombre, ut.email as tecnico_email
@@ -22,7 +21,6 @@ if (!$inc) {
     die('Incidencia no encontrada');
 }
 
-// Obtener comentarios
 $stmt = $pdo->prepare("SELECT c.*, u.nombre as usuario_nombre, u.rol 
     FROM comentarios c 
     JOIN usuarios u ON c.usuario_id = u.id 
@@ -32,7 +30,6 @@ $stmt->execute([$id]);
 $comentarios = $stmt->fetchAll();
 
 if ($tipo == 'txt') {
-    // Generar TXT
     $filename = "incidencia_{$id}_" . date('YmdHis') . ".txt";
     $filepath = "reports/txt/" . $filename;
     
@@ -83,7 +80,6 @@ if ($tipo == 'txt') {
     
     file_put_contents($filepath, $contenido);
     
-    // Descargar
     header('Content-Type: text/plain');
     header('Content-Disposition: attachment; filename="' . $filename . '"');
     header('Content-Length: ' . filesize($filepath));
@@ -91,10 +87,9 @@ if ($tipo == 'txt') {
     exit();
     
 } elseif ($tipo == 'pdf') {
-    // Generar PDF usando HTML2PDF simple
     $filename = "incidencia_{$id}_" . date('YmdHis') . ".pdf";
     
-    // HTML para el PDF
+
     $html = '
     <!DOCTYPE html>
     <html>
@@ -178,8 +173,6 @@ if ($tipo == 'txt') {
     </body>
     </html>';
     
-    // Guardar HTML temporal y convertir a PDF usando wkhtmltopdf o similar
-    // Por simplicidad, enviamos como HTML que se puede imprimir como PDF desde el navegador
     header('Content-Type: text/html; charset=UTF-8');
     header('Content-Disposition: inline; filename="' . $filename . '"');
     echo $html;

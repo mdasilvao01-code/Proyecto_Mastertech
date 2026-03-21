@@ -6,7 +6,7 @@ $where = []; $params = [];
 if ($_SESSION['rol']=='cliente') { $where[]="i.cliente_id=?"; $params[]=$_SESSION['usuario_id']; }
 elseif ($_SESSION['rol']=='tecnico' && !isset($_GET['todas'])) { $where[]="i.tecnico_id=?"; $params[]=$_SESSION['usuario_id']; }
 
-// Filters
+
 $filtro_estado    = $_GET['estado'] ?? '';
 $filtro_prioridad = $_GET['prioridad'] ?? '';
 $buscar           = trim($_GET['q'] ?? '');
@@ -48,7 +48,6 @@ try {
     </div>
   </div>
   <div class="content">
-    <!-- FILTERS -->
     <form method="GET" class="filter-bar">
       <div class="input-group" style="flex:1;min-width:200px;">
         <i class="fa fa-search input-icon"></i>

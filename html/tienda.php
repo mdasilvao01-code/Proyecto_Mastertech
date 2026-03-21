@@ -216,7 +216,6 @@ $total_carrito = array_sum($_SESSION['carrito']);
   <?php endif; ?>
 </div>
 
-<!-- Botón flotante carrito -->
 <div class="cart-fab <?= $total_carrito > 0 ? 'show' : '' ?>">
   <a href="/carrito.php">
     <i class="fa fa-cart-shopping"></i>
